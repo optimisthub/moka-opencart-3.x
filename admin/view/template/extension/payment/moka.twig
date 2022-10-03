@@ -1,0 +1,214 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+        {% for alert in alerts %}
+            <div class="alert alert-{{ alert.type }}"><i class="fa fa-{{ alert.icon }}"></i>&nbsp;{{ alert.text }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endfor %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+			</div>
+			<div class="panel-body">
+				<form method="POST" id="form-payment" class="form-horizontal">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="#tab-setting" data-toggle="tab"><i class="fa fa-gear"></i>&nbsp;{{ tab_setting }}</a></li>
+						<li><a href="#tab-transaction" data-toggle="tab"><i class="fa fa-list"></i>&nbsp;{{ tab_transaction }}</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-setting">
+							<div class="form-group required">
+								<label class="col-sm-2 control-label" for="moka-api-environment">{{ entry_api_environment }}</label>
+								<div class="col-sm-10">
+									<select name="payment_moka_api_environment" class="form-control" id="moka-api-environment">
+                                        <option value="test" {{ payment_moka_api_environment == 'test' ? 'selected' : '' }}>{{ text_sandbox }}</option>
+                                        <option value="live" {{ payment_moka_api_environment == 'live' ? 'selected' : '' }}>{{ text_live }}</option>
+									</select>
+									{% if error_api_environment %}
+										<div class="text-danger">{{ error_api_environment }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required">
+								<label class="col-sm-2 control-label" for="moka-dealer-code">{{ entry_dealer_code }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="payment_moka_dealer_code" class="form-control" value="{{ payment_moka_dealer_code }}" placeholder="{{ entry_dealer_code }}" id="moka-dealer-code"/>
+									{% if error_dealer_code %}
+										<div class="text-danger">{{ error_dealer_code }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required">
+								<label class="col-sm-2 control-label" for="moka-username">{{ entry_username }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="payment_moka_username" class="form-control" value="{{ payment_moka_username }}" placeholder="{{ entry_username }}" id="moka-username"/>
+									{% if error_username %}
+										<div class="text-danger">{{ error_username }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required">
+								<label class="col-sm-2 control-label" for="moka-password">{{ entry_password }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="payment_moka_password" class="form-control" value="{{ payment_moka_password }}" placeholder="{{ entry_password }}" id="moka-password"/>
+									{% if error_password %}
+										<div class="text-danger">{{ error_password }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required">
+                                <label class="col-sm-2 control-label">
+                                    <span data-toggle="tooltip" title="{{ help_order_status }}">{{ entry_order_status }}</span>
+                                </label>
+								<div class="col-sm-10">
+									<select name="payment_moka_order_status" class="form-control" id="moka-order-status">
+										{% for order_status in order_statuses %}
+											{% if order_status.order_status_id == payment_moka_order_status %}
+												<option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+											{% else %}
+												<option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+											{% endif %}
+										{% endfor %}
+									</select>
+									{% if error_order_status %}
+										<div class="text-danger">{{ error_order_status }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required">
+                                <label class="col-sm-2 control-label">
+                                    <span data-toggle="tooltip" title="{{ help_cancel_order_status }}">{{ entry_cancel_order_status }}</span>
+                                </label>
+								<div class="col-sm-10">
+									<select name="payment_moka_cancel_order_status" class="form-control" id="moka-cancel-order-status">
+										{% for order_status in order_statuses %}
+											{% if order_status.order_status_id == payment_moka_cancel_order_status %}
+												<option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+											{% else %}
+												<option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+											{% endif %}
+										{% endfor %}
+									</select>
+									{% if error_cancel_order_status %}
+										<div class="text-danger">{{ error_cancel_order_status }}</div>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="moka-status">{{ text_status }}</label>
+								<div class="col-sm-10">
+									<select name="payment_moka_status" class="form-control" id="moka-status">
+                                        <option value="1" {{ payment_moka_status == 1 ? 'selected' : '' }}>{{ text_extension_status_disabled }}</option>
+                                        <option value="0" {{ payment_moka_status == 0 ? 'selected' : '' }}>{{ text_extension_status_enabled }}</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="moka-sort-order">{{ text_sort_order }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="payment_moka_sort_order" class="form-control" value="{{ payment_moka_sort_order }}" placeholder="{{ text_sort_order }}" id="moka-sort-order"/>
+								</div>
+							</div>
+						</div>
+						<div class="tab-pane" id="tab-transaction">
+							<div id="transaction-alert" data-message="{{ text_loading }}"></div>
+							<div class="text-right margin-bottom"></div>
+							<div class="table-responsive">
+								<table class="table table-bordered table-hover">
+									<thead>
+										<tr>
+											<th class="text-left hidden-xs">{{ column_transaction_id }}</th>
+											<th class="text-left hidden-xs">{{ column_payment_id }}</th>
+											<th class="text-left">{{ column_customer }}</th>
+											<th class="text-left hidden-xs">{{ column_order_id }}</th>
+											<th class="text-left hidden-xs">{{ column_amount }}</th>
+											<th class="text-left hidden-xs">{{ column_installment_number }}</th>
+											<th class="text-left hidden-xs">{{ column_commission_amount }}</th>
+											<th class="text-left hidden-xs hidden-sm">{{ column_payment_status }}</th>
+											<th class="text-left hidden-xs hidden-sm">{{ column_transaction_status }}</th>
+											<th class="text-left">{{ column_created_at }}</th>
+										</tr>
+									</thead>
+									<tbody id="transactions"></tbody>
+								</table>
+								<div id="transactions_pagination"></div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    var transactionListPage = 1;
+
+    var listTransactions = function (page) {
+        $.ajax({
+            url: '{{ url_list_transactions }}'.replace('{PAGE}', page ? page : transactionListPage),
+            dataType: 'json',
+            beforeSend: function () {
+                $('#transactions_pagination').empty();
+                $('#transactions').html('<tr><td colspan="9" class="text-center"><i class="fa fa-circle-o-notch fa-spin"></i>&nbsp;{{ text_loading }}</td></tr>');
+            },
+            success: function (data) {
+                var html = '';
+
+                if (data.transactions.length) {
+                    for (var i in data.transactions) {
+                        var row = data.transactions[i];
+
+                        html += '<tr>';
+                        html += '<td class="text-left hidden-xs">' + row.moka_transaction_id + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.payment_id + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.customer + '</td>';
+                        html += '<td class="text-left"><a target="_blank" href="' + row.url_order + '">' + row.order_id + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.amount + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.installment_number + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.commission_amount + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.payment_status + '</td>';
+                        html += '<td class="text-left hidden-xs">' + row.transaction_status + '</td>';
+                        html += '<td class="text-left">' + row.created_at + '</td>';
+                        html += '</tr>';
+                    }
+                } else {
+                    html += '<tr>';
+                    html += '<td class="text-center" colspan="9">{{ text_no_transactions }}</td>';
+                    html += '</tr>';
+                }
+
+                $('#transactions').html(html);
+
+                $('#transactions_pagination').html(data.pagination).find('a[href]').each(function (index, element) {
+                    $(this).click(function (e) {
+                        e.preventDefault();
+
+                        transactionListPage = isNaN($(this).attr('href')) ? 1 : $(this).attr('href');
+
+                        listTransactions();
+                    });
+                });
+            }
+        });
+    }
+
+    listTransactions();
+});
+</script>
+{{ footer }}
