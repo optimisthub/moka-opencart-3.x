@@ -37,6 +37,10 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group required installment hide">
+                <label class="control-label" for="input-installment">Taksit Seçenkeleri</label>
+                <select class="form-control" name="installment" id="input-installment"></select>
+            </div>
         </div>
     </div>
     <div class="row" style="margin-bottom: 40px;">
@@ -73,5 +77,44 @@
                 }
             }
         });
+    });
+
+    $('#input-card-number').on('keyup', function(e) {
+        let cardNumber = this.value;
+        cardNumber = cardNumber.replace(/\s+/g, '');
+
+        if(cardNumber.length > 6) {
+            $.ajax({
+                url: '{{ installmentTable }}',
+                method: 'POST',
+                data: { bin_number: cardNumber.slice(0, 6) },
+                dataType: 'json',
+                success: function(data) {
+                    $('.installment').addClass('hide');
+                    $('#input-installment').empty();
+
+                    if(data.BankPaymentInstallmentInfoList) {
+                        $('.installment').removeClass('hide');
+
+                        $('<option/>', {
+                                'value': '',
+                                'text': 'Tek Çekim'
+                            }).appendTo('#input-installment');
+
+                        $.each(data.BankPaymentInstallmentInfoList[0].PaymentInstallmentInfoList, function() {
+                            $('<option/>', {
+                                'value': this.InstallmentNumber,
+                                'text': this.InstallmentNumber + ' (' + this.Amount + ')'
+                            }).appendTo('#input-installment');
+                        });
+                    }
+                }
+            });
+        }
+
+        if(cardNumber.length < 6) {
+            $('.installment').addClass('hide');
+            $('#input-installment').empty();
+        }
     });
 </script>
