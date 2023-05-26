@@ -176,8 +176,8 @@ class ControllerExtensionPaymentMoka extends Controller
         $this->load->model('sale/order');
 
         foreach ($transactions as $transaction) {
-            $amount = $this->currency->format($transaction['amount'], $transaction['currency_code']);
-            $commission_amount = $this->currency->format($transaction['commission_amount'], $transaction['currency_code']);
+            $amount = $transaction['amount'] . ' ' . $transaction['currency_code'];
+            $commission_amount = $transaction['commission_amount'] . ' ' . $transaction['currency_code'];
 
             $order_info = $this->model_sale_order->getOrder($transaction['order_id']);
 
